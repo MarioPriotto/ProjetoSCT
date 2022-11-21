@@ -1,3 +1,8 @@
+// Transformar a janela modal em fixa
+// search com conjunto de dados da linha
+// "balão" mostrando descrição histórico e contas (hover)
+// INC,ALT,EXC - ajustar os valores de SDmes, SDdia, SDano
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Container, Form, Spinner, Table, Modal } from "react-bootstrap";
@@ -12,13 +17,13 @@ import { faPlus, faPen, faTrash, faUpDown } from '@fortawesome/free-solid-svg-ic
 // npm install --save @fortawesome/react-fontawesome@latest
 // https://fontawesome.com/search?o=r&m=free&s=solid&f=classic
 
-function Contas(props) {
+function Lancamentos(props) {
 
   // API da base de dados principal e objeto
-  const apiURL = "https://ironrest.herokuapp.com/mContas";
+  const apiURL = "https://ironrest.herokuapp.com/mLancamentos";
 
   // Matriz de dados carregada da base de dados
-  const [mContas, setContas] = useState([]);
+  const [mLancamentos, setLancamentos] = useState([]);
   // Está carregando dados da Internet?
   const [isLoading, setIsLoading] = useState(true);
   // Variável que guarda a string de busca "pesquisa"
@@ -37,19 +42,19 @@ function Contas(props) {
 
   // Faz com que a função de Leitura dos dados só aconteça na primeira vez que o código for executado
   useEffect(() => {
-    lerContas()
-  }, [])  
+    lerLancamentos()
+  }, [])
 
   // Le os dados na Internet e armazena em Matriz (de estado)
-  const lerContas = () => {
+  const lerLancamentos = () => {
     try {
-      const fetchContas = async () => {
+      const fetchLancamentos = async () => {
           const response = await axios.get(apiURL)
           let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
-          setContas(tempData)
+          setLancamentos(tempData)
           setIsLoading(false)
       }
-      fetchContas()
+      fetchLancamentos()
     } catch (error) {
       console.log(error)
     }
@@ -59,7 +64,7 @@ function Contas(props) {
   // == > Preparação para "pegar" novos dados
   const preparaFormNova = () => {
     handleShow();
-    setForm({ reduzido: "", estrutural: "", descricao: "", nivel: 0, unidade: props.unidadeAtiva });
+    setForm({ codigo: 0, data: "", valor: 0, historico: 0, complemento: "", contaCredito: "", contaDebito: "", unidade: props.unidadeAtiva });
   }
 
   // Le, na internet, os dados do Registro informado no Parâmetro (id)
@@ -70,18 +75,25 @@ function Contas(props) {
   const alteraConta = (id) => {
     try {
       setIsLoading(true)
-      const fetchContas = async () => {
+      const fetchLancamentos = async () => {
           const response = await axios.get(`${apiURL}/${id}`)
           setForm({
-            reduzido: response.data.reduzido, estrutural: response.data.estrutural, 
-            descricao: response.data.descricao, nivel: response.data.nivel, 
-            _id: response.data._id, unidade: response.data.unidade
+            codigo: response.data.codigo, 
+            data: response.data.data,
+            valor: response.data.valor,
+            historico: response.data.historico,
+            complemento: response.data.complemento,
+            contaCredito: response.data.contaCredito,
+            contaDebito: response.data.contaDebito,
+            unidade: response.data.unidade,
+            estrutural: response.data.estrutural, 
+            _id: response.data._id
           });
           setStatusAlt(true)
           handleShow()
           setIsLoading(false)
       }
-      fetchContas()
+      fetchLancamentos()
     } catch (error) {
       console.log(error)
     }
@@ -93,11 +105,11 @@ function Contas(props) {
   const deleteConta = (id) => {
     try {
       setIsLoading(true)
-      const fetchContas = async () => {
+      const fetchLancamentos = async () => {
           await axios.delete(`${apiURL}/${id}`)
-          lerContas()
+          lerLancamentos()
       }
-      fetchContas()
+      fetchLancamentos()
     } catch (error) {
       console.log(error)
     }
@@ -129,34 +141,39 @@ function Contas(props) {
         } else {
           await axios.post(apiURL, form)
         }        
-        lerContas()
+        lerLancamentos()
         handleClose()
     } catch (error) {
         console.log(error)
     }
   }
 
-  // prepara na variável "renderContas"  o conteudo lido na base de dados
+  // prepara na variável "renderLancamentos"  o conteudo lido na base de dados
   // e que foi, previamente, armazenado na matriz correspondente
   // Reparar que a função ".filter" é utilizada para que sejam filtrados
   // somente os registros que forem compatíveis com a string de BUSCA
   // as duas últimas colunas são Botões com Links para ALTERAR e DELETAR
-  const renderContas = mContas
-  .filter((conta) => conta.descricao.toLowerCase().includes(search.toLowerCase()))
-  .map((conta) => {
+  const renderLancamentos = mLancamentos
+  .filter((lancamento) => lancamento.complemento.toLowerCase().includes(search.toLowerCase()))
+  .map((lancamento) => {
       return (
-          <tr key={conta._id}>
-              <td className="p-1 text-center">{conta.reduzido}</td>
-              <td className="p-1 text-center">{conta.estrutural}</td>
-              <td className="p-1 text-center">{conta.nivel}</td>
-              <td className="p-1">{conta.descricao}</td>
+          <tr key={lancamento._id}>
+              
+              <td className="p-1 text-end">{lancamento.codigo}</td>
+              <td className="p-1 text-center">{lancamento.data.slice(6) + "-" + lancamento.data.slice(4,6) + "-" + lancamento.data.slice(0,4) }</td>
+              <td className="p-1 text-end">{lancamento.valor.toFixed(2)}</td>
+              <td className="p-1 text-start">{lancamento.historico}</td>
+              <td className="p-1 text-start">{lancamento.complemento}</td>
+              <td className="p-1 text-start">{lancamento.contaDebito}</td>
+              <td className="p-1 text-start">{lancamento.contaCredito}</td>
+              
               <td className="p-1 text-center">
-                <Button className="p-0" variant="" onClick={ (event) => { alteraConta(conta._id) } }>
+                <Button className="p-0" variant="" onClick={ (event) => { alteraConta(lancamento._id) } }>
                   <FontAwesomeIcon style={{color: "blue"}} icon={faPen}/>
                 </Button>
               </td>
               <td className="p-1 text-center">
-                <Button className="p-0" variant="" onClick={ (event) => { deleteConta(conta._id) } }>
+                <Button className="p-0" variant="" onClick={ (event) => { deleteConta(lancamento._id) } }>
                   <FontAwesomeIcon style={{color: "red"}}  icon={faTrash} />
                 </Button>
               </td>
@@ -165,26 +182,26 @@ function Contas(props) {
   })
 
   const classifica = (property, type) => {
-    let xContas = [...mContas];
+    let xLancamentos = [...mLancamentos];
     if ( type === 'number') {
-      if ( parseInt(xContas[0][property]) > parseInt(xContas[xContas.length-1][property]) ) {
-        xContas.sort( (a,b) => parseInt(a[property]) > parseInt(b[property]) ? 1 : -1 )
+      if ( parseInt(xLancamentos[0][property]) > parseInt(xLancamentos[xLancamentos.length-1][property]) ) {
+        xLancamentos.sort( (a,b) => parseInt(a[property]) > parseInt(b[property]) ? 1 : -1 )
       } else {
-        xContas.sort( (a,b) => parseInt(a[property]) < parseInt(b[property]) ? 1 : -1 )
+        xLancamentos.sort( (a,b) => parseInt(a[property]) < parseInt(b[property]) ? 1 : -1 )
       }
     } else {
-      if ( xContas[0][property].toLowerCase() > xContas[xContas.length-1][property].toLowerCase() ) {
-        xContas.sort( (a,b) => a[property].toLowerCase() > b[property].toLowerCase() ? 1 : -1 )
+      if ( xLancamentos[0][property].toLowerCase() > xLancamentos[xLancamentos.length-1][property].toLowerCase() ) {
+        xLancamentos.sort( (a,b) => a[property].toLowerCase() > b[property].toLowerCase() ? 1 : -1 )
       } else {
-        xContas.sort( (a,b) => a[property].toLowerCase() < b[property].toLowerCase() ? 1 : -1 )
+        xLancamentos.sort( (a,b) => a[property].toLowerCase() < b[property].toLowerCase() ? 1 : -1 )
       }
     }
-    setContas(xContas);
+    setLancamentos(xLancamentos);
   }
 
   return (
 
-    <div className="Contas">
+    <div className="Lancamentos">
 
         <Container>
 
@@ -195,7 +212,7 @@ function Contas(props) {
                 <FontAwesomeIcon style={{color: "blue"}} icon={faPlus}/> 
               </Button>
               <Form.Control
-                    type="search" placeholder="Procurar conta"
+                    type="search" placeholder="Procurar lancamento"
                     value={ search } onChange={ (e) => setSearch(e.target.value) }
               />
             </Form>
@@ -206,8 +223,8 @@ function Contas(props) {
                 <Modal.Header closeButton>
                     <Modal.Title>
                       {/* TEXTO É AJUSTADO CONFORME variável statusALT que indica se é ALTERAÇÃO ou INCLUSÃO */}
-                      { statusAlt && <p>Alterar conta</p> }
-                      { !statusAlt && <p>Nova conta</p> }
+                      { statusAlt && <p>Alterar lancamento</p> }
+                      { !statusAlt && <p>Novo lancamento</p> }
                     </Modal.Title>
                 </Modal.Header>
 
@@ -217,7 +234,7 @@ function Contas(props) {
                         <Form.Group className="mb-3 lh-1 fw-bold">
                             <Form.Label>Codigo Reduzido:</Form.Label>
                             <Form.Control type="text"
-                                placeholder="Insira o código reduzido da conta"
+                                placeholder="Insira o código reduzido do lancamento"
                                 name="reduzido" value={form.reduzido} onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -226,7 +243,7 @@ function Contas(props) {
                         <Form.Group className="mb-3 lh-1 fw-bold">
                             <Form.Label>Codigo Estrutural:</Form.Label>
                             <Form.Control type="text"
-                                placeholder="Insira o código estrutural da conta"
+                                placeholder="Insira o código estrutural do lancamento"
                                 name="estrutural" value={form.estrutural} onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -235,7 +252,7 @@ function Contas(props) {
                         <Form.Group className="mb-3 lh-1 fw-bold">
                             <Form.Label>Nível:</Form.Label>
                             <Form.Control type="text"
-                                placeholder="Insira o nível da conta"
+                                placeholder="Insira o nível do lancamento"
                                 name="nivel" value={form.nivel} onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -244,7 +261,7 @@ function Contas(props) {
                         <Form.Group className="mb-3 lh-1 fw-bold">
                             <Form.Label>Descrição:</Form.Label>
                             <Form.Control type="text"
-                                placeholder="Insira a descrição da conta"
+                                placeholder="Insira a descrição do lancamento"
                                 name="descricao" value={form.descricao} onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -268,27 +285,45 @@ function Contas(props) {
                 <Table className="mt-4" bordered hover>
                     <thead>
                         <tr>
-                            <th onClick={ () => classifica('reduzido','number') } className=" text-center">
+                            <th onClick={ () => classifica('codigo','number') } className=" text-center">
                               <div className="d-flex">
-                                <div className='col-11'>C.Reduzido</div>
+                                <div className='col-11'>Código</div>
                                 <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
                               </div>
                             </th>
-                            <th onClick={ () => classifica('estrutural','number') } className=" text-center">
+                            <th onClick={ () => classifica('data','number') } className=" text-center">
                               <div className="d-flex">
-                                <div className='col-11'>C.Estrutural</div>
+                                <div className='col-11'>Data</div>
                                 <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
                               </div>
                             </th>
-                            <th onClick={ () => classifica('nivel','number') } className=" text-center">
+                            <th onClick={ () => classifica('valor','number') } className=" text-center">
                               <div className="d-flex">
-                                <div className='col-11'>Nivel</div>
+                                <div className='col-11'>Valor</div>
                                 <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
                               </div>
                             </th>                                                        
-                            <th onClick={ () => classifica('descricao','text') }>
+                            <th onClick={ () => classifica('historico','number') }>
                               <div className="d-flex">
-                                <div className='col-11'>Descrição</div>
+                                <div className='col-11'>Histórico</div>
+                                <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
+                              </div>
+                            </th>
+                            <th onClick={ () => classifica('complemento','text') }>
+                              <div className="d-flex">
+                                <div className='col-11'>Complemento</div>
+                                <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
+                              </div>
+                            </th>
+                            <th onClick={ () => classifica('contaDebito','number') }>
+                              <div className="d-flex">
+                                <div className='col-11'>Débito</div>
+                                <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
+                              </div>
+                            </th>
+                            <th onClick={ () => classifica('contaCredito','number') }>
+                              <div className="d-flex">
+                                <div className='col-11'>Crédito</div>
                                 <div className='col-1'> <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/> </div>
                               </div>
                             </th>
@@ -297,7 +332,7 @@ function Contas(props) {
                         </tr>
                     </thead>
                     <tbody>
-                        { renderContas } 
+                        { renderLancamentos } 
                     </tbody>
                 </Table>
             }
@@ -314,7 +349,7 @@ function Contas(props) {
 
 }
 
-export default Contas;
+export default Lancamentos;
 
 // ---------------------------------------------------------------------//
 

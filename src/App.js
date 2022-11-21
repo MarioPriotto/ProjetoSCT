@@ -2,19 +2,20 @@ import Contas from "./components/Contas/Contas";
 // import Usuarios from "./components/Usuarios/Usuarios";
 // import Historicos from "./components/Historicos/Historicos";
 // import Unidades from "./components/Unidades/Unidades";
-// import Lancamentos from "./components/Lancamentos/Lancamentos";
+import Lancamentos from "./components/Lancamentos/Lancamentos";
 import HomePage from './components/HomePage/HomePage';
 import NavigationBar from './components/NavigationBar/NavigationBar';
+import BaseDados from './components/BaseDados/BaseDados';
 
 import { Routes, Route } from 'react-router-dom';
 import { useState } from "react";
 
 function App() {
-  
-  const [work, setWork] = useState({usuario: 0, unidade: 0});
 
-  const validaWork = (usuario, unidade) => {
-    setWork( { usuario: usuario, unidade: unidade } );
+  const [work, setWork] = useState({usuario: 0, unidade: 0, descricaoUnidade: "", permissao: ""});
+
+  const validaWork = (usuario, unidade, descricaoUnidade, permissao) => {
+    setWork( { usuario: usuario, unidade: unidade, descricaoUnidade: descricaoUnidade, permissao: permissao } );
   }
 
   return (
@@ -25,14 +26,23 @@ function App() {
 
       <Routes>
       
-        <Route path="/contas" element={<Contas/>} />
-        {/* <Route path="/usuarios" element={<Usuarios/>} />
-        <Route path="/historicos" element={<Historicos/>} />
-        <Route path="/unidades" element={<Unidades/>} />
-        <Route path="/lancamentos" element={<Lancamentos/>} /> */}
+        { work.usuario > 0 && work.unidade > 0 && 
+          <>
+            <Route path="/contas" element={<Contas unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
+            { work.permissao === 'Administrativa' && 
+              <>
+                {/* <Route path="/usuarios" element={<Usuarios/>}/>  */}
+                <Route path="/basedados" element={<BaseDados/>}/> 
+              </>
+            }
+            {/* <Route path="/unidades" element={<Unidades/>} /> */}
+            {/* <Route path="/historicos" element={<Historicos/>} /> */}
+            <Route path="/lancamentos" element={<Lancamentos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
+          </>
+        }
 
         <Route path="/" element={<HomePage validaWork={validaWork} usuario={work.usuario} unidade={work.unidade}/>} />
-        
+
       </Routes>
 
     </div>
