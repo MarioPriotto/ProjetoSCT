@@ -23,6 +23,7 @@ function NavigationBar(props) {
                             { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/basedados">BD</Link> }
                             {/* <Link className="nav-link" to="/historicos">Historicos</Link>                         */}
                             <Link className="nav-link" to="/lancamentos">Lançamentos</Link>
+                            <Link className="nav-link" to="/balancete">Balancete</Link>
                     </Nav>
                 }
                 </Navbar.Collapse>

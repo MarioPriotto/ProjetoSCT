@@ -6,6 +6,7 @@ import Lancamentos from "./components/Lancamentos/Lancamentos";
 import HomePage from './components/HomePage/HomePage';
 import NavigationBar from './components/NavigationBar/NavigationBar';
 import BaseDados from './components/BaseDados/BaseDados';
+import Balancete from './components/Balancete/Balancete';
 
 import { Routes, Route } from 'react-router-dom';
 import { useState } from "react";
@@ -38,6 +39,7 @@ function App() {
             {/* <Route path="/unidades" element={<Unidades/>} /> */}
             {/* <Route path="/historicos" element={<Historicos/>} /> */}
             <Route path="/lancamentos" element={<Lancamentos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
+            <Route path="/balancete" element={<Balancete unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
           </>
         }
 

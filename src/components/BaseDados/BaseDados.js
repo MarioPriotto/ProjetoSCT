@@ -7,6 +7,7 @@ function BaseDados () {
     const apiURLhistoricos  = "https://ironrest.herokuapp.com/mHistoricos";
     const apiURLcontas      = "https://ironrest.herokuapp.com/mContas";
     const apiURLlancamentos = "https://ironrest.herokuapp.com/mLancamentos";
+
     const apiURLsdAno       = "https://ironrest.herokuapp.com/mSDano";
     const apiURLsdMes       = "https://ironrest.herokuapp.com/mSDmes";
     const apiURLsdDia       = "https://ironrest.herokuapp.com/mSDdia";
@@ -22,6 +23,7 @@ function BaseDados () {
     handleDeleta("https://ironrest.herokuapp.com/deleteCollection/mHistoricos")
     handleDeleta("https://ironrest.herokuapp.com/deleteCollection/mContas")
     handleDeleta("https://ironrest.herokuapp.com/deleteCollection/mLancamentos")
+
     handleDeleta("https://ironrest.herokuapp.com/deleteCollection/mSDano")
     handleDeleta("https://ironrest.herokuapp.com/deleteCollection/mSDmes")
     handleDeleta("https://ironrest.herokuapp.com/deleteCollection/mSDdia")
@@ -267,15 +269,15 @@ function BaseDados () {
     handleInclusao(apiURLcontas,{ estrutural: '231100000', unidade: '1', reduzido:'1994', nivel:'4', descricao:'Participação de Acionistas não Controladores (só no Balanço Consolidado)' })
     handleInclusao(apiURLcontas,{ estrutural: '231110000', unidade: '1', reduzido:'5725', nivel:'9', descricao:'Participação de Acionistas não controladores' })
 
-    handleInclusao(apiURLlancamentos, { codigo: 56, data: "20221120", valor: 104.50, historico: 1, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    handleInclusao(apiURLlancamentos, { codigo: 57, data: "20221005", valor: 251.50, historico: 5, complemento: "878.345 - Domênico", contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    handleInclusao(apiURLlancamentos, { codigo: 58, data: "20221114", valor: 314.75, historico: 3, complemento: "345 - Juarez",       contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    handleInclusao(apiURLlancamentos, { codigo: 59, data: "20220901", valor: 491.00, historico: 1, complemento: "Roberto",            contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    handleInclusao(apiURLlancamentos, { codigo: 60, data: "20221105", valor:   1.50, historico: 2, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    // handleInclusao(apiURLlancamentos, { codigo: 56, data: "20/11/2022", valor: 104.50, historico: 1, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    // handleInclusao(apiURLlancamentos, { codigo: 57, data: "05/10/2022", valor: 251.50, historico: 5, complemento: "878.345 - Domênico", contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    // handleInclusao(apiURLlancamentos, { codigo: 58, data: "14/11/2022", valor: 314.75, historico: 3, complemento: "345 - Juarez",       contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    // handleInclusao(apiURLlancamentos, { codigo: 59, data: "01/09/2022", valor: 491.00, historico: 1, complemento: "Roberto",            contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    // handleInclusao(apiURLlancamentos, { codigo: 60, data: "05/11/2022", valor:   1.50, historico: 2, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
 
-    handleInclusao(apiURLsdAno,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0 })
-    handleInclusao(apiURLsdMes,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0, mes: 0 })
-    handleInclusao(apiURLsdDia,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0, mes: 0, dia: 0 })
+    //handleInclusao(apiURLsdAno,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0 })
+    //handleInclusao(apiURLsdMes,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0, mes: 0 })
+    //handleInclusao(apiURLsdDia,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0, mes: 0, dia: 0 })
 
     return (
         <div>
