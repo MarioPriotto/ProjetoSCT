@@ -103,7 +103,8 @@ function Lancamentos(props) {
     try {
       const fetchLancamentos = async () => {
           const response = await axios.get(apiURL)
-          setLancamentos(response.data)
+          let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
+          setLancamentos(tempData)
           setIsLoading(false)
       }
       fetchLancamentos()
@@ -134,9 +135,7 @@ function Lancamentos(props) {
       setIsLoading(true)
       const fetchLancamentos = async () => {
           const response = await axios.get(`${apiURL}/${id}`)
-
-          setRegistroOriginal(response.data);          
-
+          setRegistroOriginal(response.data);
           setForm({
             codigo: response.data.codigo, data: response.data.data,
             valor: parseFloat(response.data.valor).toFixed(2), 
@@ -204,6 +203,7 @@ function Lancamentos(props) {
     if ( e.target.name === 'valor' ) {
       setForm({...form, [e.target.name]: parseFloat(e.target.value).toFixed(2) })
     }
+
     if ( e.target.name === 'historico' ) {
       let indHistorico = mHistoricos.findIndex(h=>parseInt(h.codigo)===parseInt(e.target.value));
       if ( indHistorico === -1 ) {
@@ -213,30 +213,46 @@ function Lancamentos(props) {
         indHistorico > -1 ? setTxtHistorico(mHistoricos[indHistorico].descricao) : setTxtHistorico(" ");
       }
     }
+
+    // if ( e.target.name === 'contaDebito' ) {
+    //   let indContaDebito = mContas.findIndex(h=>h.estrutural===e.target.value);
+    //   if ( mContas[indContaDebito].nivel !== "9" ) {
+    //     setForm({...form, contaDebito: "0" })
+    //     setTxtContaDebito(" Conta deve ser de nível 9 ")
+    //   } else if ( form.contaCredito === form.contaDebito ) {
+    //     setForm({...form, contaDebito: "0" })
+    //     setTxtContaDebito(" Contas não podem ser iguais ")
+    //   } else {
+    //     indContaDebito > -1 ? setTxtContaDebito(mContas[indContaDebito].descricao) : setTxtContaDebito(" Conta NÃO existe")
+    //   }
+    // }
+
     if ( e.target.name === 'contaDebito' ) {
       let indContaDebito = mContas.findIndex(h=>h.estrutural===e.target.value);
-      if ( mContas[indContaDebito].nivel !== "9" ) {
-        setForm({...form, contaDebito: "0" })
-        setTxtContaDebito(" Conta deve ser de nível 9 ")
-      } else if ( form.contaCredito === form.contaDebito ) {
-        setForm({...form, contaDebito: "0" })
-        setTxtContaDebito(" Contas não podem ser iguais ")
+      if ( indContaDebito < 0 ) {
+        setTxtContaDebito("Informe uma conta VÁLIDA"); 
+        setForm({...form, contaDebito: "0" }); 
+        return;
       } else {
-        indContaDebito > -1 ? setTxtContaDebito(mContas[indContaDebito].descricao) : setTxtContaDebito(" ")
+        if ( mContas[indContaDebito].nivel !== "9"  ) { setTxtContaDebito("É obrigatório uma conta de NIVEL 9");   setForm({...form, contaDebito: "0" }); return; }
+        if ( form.contaDebito === form.contaCredito ) { setTxtContaDebito("As contas DB/CR não podem ser iguais"); setForm({...form, contaDebito: "0" }); return; }
+        setTxtContaDebito(mContas[indContaDebito].descricao)
       }
     }
+
     if ( e.target.name === 'contaCredito' ) {
       let indContaCredito = mContas.findIndex(h=>h.estrutural===e.target.value);
-      if ( mContas[indContaCredito].nivel !== "9" ) {
-        setForm({...form, contaCredito: "0" })
-        setTxtContaCredito(" Conta deve ser de nível 9 ");
-      } else if ( form.contaCredito === form.contaDebito ) {
-        setForm({...form, contaCredito: "0" })
-        setTxtContaCredito(" Contas não podem ser iguais ")
+      if ( indContaCredito < 0 ) {
+        setTxtContaCredito("Informe uma conta VÁLIDA"); 
+        setForm({...form, contaCredito: "0" }); 
+        return;
       } else {
-        indContaCredito > -1 ? setTxtContaCredito(mContas[indContaCredito].descricao) : setTxtContaCredito(" ");
+        if ( mContas[indContaCredito].nivel !== "9" ) { setTxtContaCredito("É obrigatório uma conta de NIVEL 9");   setForm({...form, contaCredito: "0" }); return; }
+        if ( form.contaCredito === form.contaDebito ) { setTxtContaCredito("As contas DB/CR não podem ser iguais"); setForm({...form, contaCredito: "0" }); return; }
+        setTxtContaCredito(mContas[indContaCredito].descricao)
       }
     }
+
   }
 
   // dispara quando o usuário clica em "GRAVAR" no Formulário (alteração ou inclusão)
@@ -486,13 +502,13 @@ function Lancamentos(props) {
   .map((l) => {
       return (
           <tr key={l._id}>              
-              <td className="p-1 text-end">{l.codigo}</td>            
+              <td className="p-1 text-center">{l.codigo}</td>
               <td className="p-1 text-center">{l.data}</td>
               <td className="p-1 text-end">{l.valor.toFixed(2)}</td>
-              <td className="p-1 text-start">{l.historico}</td>
+              <td className="p-1 text-center">{l.historico}</td>
               <td className="p-1 text-start">{l.complemento}</td>
-              <td className="p-1 text-start">{l.contaDebito}</td>
-              <td className="p-1 text-start">{l.contaCredito}</td>              
+              <td className="p-1 text-center">{l.contaDebito}</td>
+              <td className="p-1 text-center">{l.contaCredito}</td>              
               <td className="p-1 text-center">
                 <Button className="p-0" variant="" onClick={ (event) => { alterarLancamento(l._id) } }>
                   <FontAwesomeIcon style={{color: "blue"}} icon={faPen}/>
