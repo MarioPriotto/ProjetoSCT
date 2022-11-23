@@ -8,9 +8,9 @@ function BaseDados () {
     const apiURLcontas      = "https://ironrest.herokuapp.com/mContas";
     const apiURLlancamentos = "https://ironrest.herokuapp.com/mLancamentos";
 
-    const apiURLsdAno       = "https://ironrest.herokuapp.com/mSDano";
-    const apiURLsdMes       = "https://ironrest.herokuapp.com/mSDmes";
-    const apiURLsdDia       = "https://ironrest.herokuapp.com/mSDdia";
+    // const apiURLsdAno       = "https://ironrest.herokuapp.com/mSDano";
+    // const apiURLsdMes       = "https://ironrest.herokuapp.com/mSDmes";
+    // const apiURLsdDia       = "https://ironrest.herokuapp.com/mSDdia";
 
     const handleDeleta = async (api) => {
         try {
@@ -269,11 +269,16 @@ function BaseDados () {
     handleInclusao(apiURLcontas,{ estrutural: '231100000', unidade: '1', reduzido:'1994', nivel:'4', descricao:'Participação de Acionistas não Controladores (só no Balanço Consolidado)' })
     handleInclusao(apiURLcontas,{ estrutural: '231110000', unidade: '1', reduzido:'5725', nivel:'9', descricao:'Participação de Acionistas não controladores' })
 
-    // handleInclusao(apiURLlancamentos, { codigo: 56, data: "20/11/2022", valor: 104.50, historico: 1, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    // handleInclusao(apiURLlancamentos, { codigo: 57, data: "05/10/2022", valor: 251.50, historico: 5, complemento: "878.345 - Domênico", contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    // handleInclusao(apiURLlancamentos, { codigo: 58, data: "14/11/2022", valor: 314.75, historico: 3, complemento: "345 - Juarez",       contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    // handleInclusao(apiURLlancamentos, { codigo: 59, data: "01/09/2022", valor: 491.00, historico: 1, complemento: "Roberto",            contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
-    // handleInclusao(apiURLlancamentos, { codigo: 60, data: "05/11/2022", valor:   1.50, historico: 2, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 56, data: "20/11/2022", valor: 104.50, historico: 1, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 57, data: "05/10/2022", valor: 251.50, historico: 5, complemento: "878.345 - Domênico", contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 58, data: "14/11/2022", valor: 314.75, historico: 3, complemento: "345 - Juarez",       contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 59, data: "01/09/2022", valor: 491.00, historico: 1, complemento: "Roberto",            contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 60, data: "05/11/2022", valor:   1.50, historico: 2, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 61, data: "20/11/2022", valor: 104.50, historico: 1, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 62, data: "05/10/2022", valor: 251.50, historico: 5, complemento: "878.345 - Domênico", contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 63, data: "14/11/2022", valor: 314.75, historico: 3, complemento: "345 - Juarez",       contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 64, data: "01/09/2022", valor: 491.00, historico: 1, complemento: "Roberto",            contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
+    handleInclusao(apiURLlancamentos, { codigo: 65, data: "05/11/2022", valor:   1.50, historico: 2, complemento: "",                   contaCredito: "231910000", contaDebito: "231710000", unidade: "1" } )
 
     //handleInclusao(apiURLsdAno,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0 })
     //handleInclusao(apiURLsdMes,{ estrutural: '231110000', unidade: '1', saldo: 0, ano: 0, mes: 0 })

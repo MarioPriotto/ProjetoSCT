@@ -1,7 +1,7 @@
 import Contas from "./components/Contas/Contas";
-// import Usuarios from "./components/Usuarios/Usuarios";
-// import Historicos from "./components/Historicos/Historicos";
-// import Unidades from "./components/Unidades/Unidades";
+import Usuarios from "./components/Usuarios/Usuarios";
+import Historicos from "./components/Historicos/Historicos";
+import Unidades from "./components/Unidades/Unidades";
 import Lancamentos from "./components/Lancamentos/Lancamentos";
 import HomePage from './components/HomePage/HomePage';
 import NavigationBar from './components/NavigationBar/NavigationBar';
@@ -10,6 +10,8 @@ import Balancete from './components/Balancete/Balancete';
 
 import { Routes, Route } from 'react-router-dom';
 import { useState } from "react";
+
+import { Container } from "react-bootstrap";
 
 function App() {
 
@@ -27,21 +29,21 @@ function App() {
 
       <Routes>
       
-        { work.usuario > 0 && work.unidade > 0 && 
-          <>
+        {/* { work.usuario > 0 && work.unidade > 0 &&  */}
+
             <Route path="/contas" element={<Contas unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
-            { work.permissao === 'Administrativa' && 
-              <>
-                {/* <Route path="/usuarios" element={<Usuarios/>}/>  */}
-                <Route path="/basedados" element={<BaseDados/>}/> 
-              </>
-            }
-            {/* <Route path="/unidades" element={<Unidades/>} /> */}
-            {/* <Route path="/historicos" element={<Historicos/>} /> */}
+            {/* { work.permissao === 'Administrativa' &&  */}
+
+            { work.permissao === 'Administrativa' && <Route path="/usuarios" element={<Usuarios/>}/> }
+            { work.permissao === 'Administrativa' && <Route path="/basedados" element={<BaseDados/>}/> }
+
+            {/* } */}
+            <Route path="/unidades" element={<Unidades/>} />
+            <Route path="/historicos" element={<Historicos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
             <Route path="/lancamentos" element={<Lancamentos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
             <Route path="/balancete" element={<Balancete unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
-          </>
-        }
+
+        {/* } */}
 
         <Route path="/" element={<HomePage validaWork={validaWork} usuario={work.usuario} unidade={work.unidade}/>} />
 
