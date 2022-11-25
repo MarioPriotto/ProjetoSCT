@@ -510,12 +510,12 @@ function Lancamentos(props) {
                 l.valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
               }</td>
 
-              <td className="p-1 text-center">{l.historico}</td>
+              <td className="p-1 text-start">{l.historico}<span style={{fontSize: "12px"}}> {mHistoricos[mHistoricos.findIndex( c => parseInt(c.codigo) === l.historico)].descricao}</span></td>
               <td className="p-1 text-start">{l.complemento}</td>
-              <td className="p-1 text-center">{l.contaDebito}</td>
-              <td className="p-1 text-center">{l.contaCredito}</td>              
+              <td className="p-1 text-start">{l.contaDebito}<span style={{fontSize: "12px"}}> {mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao}</span></td>
+              <td className="p-1 text-start">{l.contaCredito}<span style={{fontSize: "12px"}}> {mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao}</span></td>              
               <td className="p-1 text-center">
-                <Button className="p-0" variant="" onClick={ (event) => { alterarLancamento(l._id) } }>
+                <Button className="p-0" variant="" onClick={ (event) => { alterarLancamento(l._id) } }> 
                   <FontAwesomeIcon style={{color: "blue"}} icon={faPen}/>
                 </Button>
               </td>
@@ -549,7 +549,10 @@ function Lancamentos(props) {
       }
     }
     if ( type === 'data') {
-      if ( xLancto[0][propr] > xLancto[xLancto.length-1][propr] ) {
+      let dataA = xLancto[0][propr].slice(6) + "-" + xLancto[0][propr].slice(3,5) + "-" + xLancto[0][propr].slice(0,2);
+      let dataB = xLancto[xLancto.length-1][propr].slice(6) + "-" + xLancto[xLancto.length-1][propr].slice(3,5) + "-" + xLancto[xLancto.length-1][propr].slice(0,2);
+      // if ( xLancto[0][propr] > xLancto[xLancto.length-1][propr] ) {
+      if ( dataA > dataB ) {
         xLancto.sort( (a,b) => 
             a[propr].slice(6) + "-" + a[propr].slice(3,5) + "-" + a[propr].slice(0,2) > 
             b[propr].slice(6) + "-" + b[propr].slice(3,5) + "-" + b[propr].slice(0,2) ? 
