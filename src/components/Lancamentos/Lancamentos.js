@@ -1,5 +1,5 @@
 // Transformar a janela modal em fixa
-// search com conjunto de dados da linha
+// search com todo o conjunto de dados da linha
 // "balão" mostrando descrição histórico e contas (hover)
 // INC,ALT,EXC - ajustar os valores de SDmes, SDdia, SDano
 
@@ -22,9 +22,9 @@ function Lancamentos(props) {
   const apiURLhistoricos = "https://ironrest.herokuapp.com/mHistoricos";
   const apiURLcontas     = "https://ironrest.herokuapp.com/mContas";
 
-  const apiURLsdMES      = "https://ironrest.herokuapp.com/mSDmes";
-  const apiURLsdDIA      = "https://ironrest.herokuapp.com/mSDdia";
-  const apiURLsdANO      = "https://ironrest.herokuapp.com/mSDano";
+  // const apiURLsdMES      = "https://ironrest.herokuapp.com/mSDmes";
+  // const apiURLsdDIA      = "https://ironrest.herokuapp.com/mSDdia";
+  // const apiURLsdANO      = "https://ironrest.herokuapp.com/mSDano";
 
   // Matriz de dados carregada da base de dados
   const [mLancamentos, setLancamentos] = useState([]);
@@ -59,7 +59,7 @@ function Lancamentos(props) {
   const [txtHistorico, setTxtHistorico] = useState("");
 
   // guarda o objeto original do registro que entra em modo alteração
-  const [registroOriginal, setRegistroOriginal] = useState({});
+  // const [registroOriginal, setRegistroOriginal] = useState({});
 
   const [rDescricao, setRdescricao] = useState(false);
 
@@ -137,7 +137,7 @@ function Lancamentos(props) {
       setIsLoading(true)
       const fetchLancamentos = async () => {
           const response = await axios.get(`${apiURL}/${id}`)
-          setRegistroOriginal(response.data);
+          //setRegistroOriginal(response.data);
           setForm({
             codigo: response.data.codigo, data: response.data.data,
             valor: parseFloat(response.data.valor).toFixed(2), 
@@ -181,8 +181,8 @@ function Lancamentos(props) {
     try {
       setIsLoading(true)
       const fetchLancamentos = async () => {
-          const response = await axios.get(`${apiURL}/${id}`)
-          excluirSaldos(response.data);
+          //const response = await axios.get(`${apiURL}/${id}`)
+          //excluirSaldos(response.data);
           await axios.delete(`${apiURL}/${id}`)
           lerLancamentos()
       }
@@ -215,19 +215,6 @@ function Lancamentos(props) {
         indHistorico > -1 ? setTxtHistorico(mHistoricos[indHistorico].descricao) : setTxtHistorico(" ");
       }
     }
-
-    // if ( e.target.name === 'contaDebito' ) {
-    //   let indContaDebito = mContas.findIndex(h=>h.estrutural===e.target.value);
-    //   if ( mContas[indContaDebito].nivel !== "9" ) {
-    //     setForm({...form, contaDebito: "0" })
-    //     setTxtContaDebito(" Conta deve ser de nível 9 ")
-    //   } else if ( form.contaCredito === form.contaDebito ) {
-    //     setForm({...form, contaDebito: "0" })
-    //     setTxtContaDebito(" Contas não podem ser iguais ")
-    //   } else {
-    //     indContaDebito > -1 ? setTxtContaDebito(mContas[indContaDebito].descricao) : setTxtContaDebito(" Conta NÃO existe")
-    //   }
-    // }
 
     if ( e.target.name === 'contaDebito' ) {
       let indContaDebito = mContas.findIndex(h=>h.estrutural===e.target.value);
@@ -271,16 +258,11 @@ function Lancamentos(props) {
           clone.valor = parseFloat(clone.valor);
           clone.historico = parseInt(clone.historico);
           await axios.put(`${apiURL}/${form._id}`, clone)
-          incluirSaldos(clone);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          await axios.get(apiURLcontas);
-          excluirSaldos(registroOriginal);          
+          // incluirSaldos(clone);
+          // await axios.get(apiURLcontas); (10 repetições da linha - p/atrasar processamento)
+          // incluirSaldos depende dos dados já atualizados do axios.put anterior
+          // isso gera conflito de tempo de atualização
+          // excluirSaldos(registroOriginal);          
         } else { // Inclusão
           const clone = { ...form }
           clone.valor = parseFloat(clone.valor);
@@ -289,7 +271,7 @@ function Lancamentos(props) {
             cur.codigo > acu ? cur.codigo : acu , 0 ) ) + 1 
           );
           await axios.post(apiURL, clone)
-          incluirSaldos(clone);
+          // incluirSaldos(clone);
         }        
         lerLancamentos()
         handleClose()
@@ -304,195 +286,195 @@ function Lancamentos(props) {
 
   // ******************* EXCLUIR LANÇAMENTOS NAS BASES DE DADO DE SALDOS (DD,MM,AA)
 
-  const excluirSaldos = (registro) => {
+  // const excluirSaldos = (registro) => {
 
-    let ano = parseInt(registro.data.slice(6));
-    let mes = registro.data.slice(3,5);
-    let dia = registro.data.slice(0,2);
-    let estruturalDB = registro.contaDebito;
-    let estruturalCR = registro.contaCredito;
-    let esteValor = registro.valor;
+  //   let ano = parseInt(registro.data.slice(6));
+  //   let mes = registro.data.slice(3,5);
+  //   let dia = registro.data.slice(0,2);
+  //   let estruturalDB = registro.contaDebito;
+  //   let estruturalCR = registro.contaCredito;
+  //   let esteValor = registro.valor;
 
-    console.log("==========EXCLUSAO: ", ano,mes,dia,estruturalDB, estruturalCR, esteValor);
+  //   console.log("==========EXCLUSAO: ", ano,mes,dia,estruturalDB, estruturalCR, esteValor);
 
-    try { // ***** gravação das totalizações por ano
-      const fetchSDano = async () => {
-          const respDB = await axios.get(apiURLsdANO) // AJUSTANDO SALDO DEBITO
-          let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
-          console.log(" EXCanoDB: ",ano,props.unidadeAtiva,estruturalDB) 
-          if ( iPeriodoDB > -1 ) {
-            let saldoPeriodo  = respDB.data[iPeriodoDB].saldo + esteValor
-            let idPeriodo     = respDB.data[iPeriodoDB]._id
-            let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
-          }
-          const respCR = await axios.get(apiURLsdANO) // AJUSTANDO SALDO CREDITO
-          let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
-          console.log(" EXCanoCR: ",ano,props.unidadeAtiva,estruturalCR)
-          if ( iPeriodoCR > -1 ) {
-            let saldoPeriodo  = respCR.data[iPeriodoCR].saldo - esteValor
-            let idPeriodo     = respCR.data[iPeriodoCR]._id
-            let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
-          }
-      }
-      fetchSDano()
-    } catch (error) { console.log(error) }
+  //   try { // ***** gravação das totalizações por ano
+  //     const fetchSDano = async () => {
+  //         const respDB = await axios.get(apiURLsdANO) // AJUSTANDO SALDO DEBITO
+  //         let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
+  //         console.log(" EXCanoDB: ",ano,props.unidadeAtiva,estruturalDB) 
+  //         if ( iPeriodoDB > -1 ) {
+  //           let saldoPeriodo  = respDB.data[iPeriodoDB].saldo + esteValor
+  //           let idPeriodo     = respDB.data[iPeriodoDB]._id
+  //           let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
+  //         }
+  //         const respCR = await axios.get(apiURLsdANO) // AJUSTANDO SALDO CREDITO
+  //         let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
+  //         console.log(" EXCanoCR: ",ano,props.unidadeAtiva,estruturalCR)
+  //         if ( iPeriodoCR > -1 ) {
+  //           let saldoPeriodo  = respCR.data[iPeriodoCR].saldo - esteValor
+  //           let idPeriodo     = respCR.data[iPeriodoCR]._id
+  //           let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
+  //         }
+  //     }
+  //     fetchSDano()
+  //   } catch (error) { console.log(error) }
 
-    try { // ***** gravação das totalizações por ano/mes
-      const fetchSDanoMes = async () => {
-          const respDB = await axios.get(apiURLsdMES) // AJUSTANDO SALDO DEBITO
-          let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
-          console.log(" EXCanomesDB: ",ano,mes,props.unidadeAtiva,estruturalDB) 
-          if ( iPeriodoDB > -1 ) {
-            let saldoPeriodo  = respDB.data[iPeriodoDB].saldo + esteValor
-            let idPeriodo     = respDB.data[iPeriodoDB]._id
-            let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
-          }
-          const respCR = await axios.get(apiURLsdMES) // AJUSTANDO SALDO CREDITO
-          let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
-          console.log(" EXCanomesCR: ",ano,mes,props.unidadeAtiva,estruturalCR)
-          if ( iPeriodoCR > -1 ) {
-            let saldoPeriodo  = respCR.data[iPeriodoCR].saldo - esteValor
-            let idPeriodo     = respCR.data[iPeriodoCR]._id
-            let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
-          }
-      }
-      fetchSDanoMes()
-    } catch (error) { console.log(error) }
+  //   try { // ***** gravação das totalizações por ano/mes
+  //     const fetchSDanoMes = async () => {
+  //         const respDB = await axios.get(apiURLsdMES) // AJUSTANDO SALDO DEBITO
+  //         let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
+  //         console.log(" EXCanomesDB: ",ano,mes,props.unidadeAtiva,estruturalDB) 
+  //         if ( iPeriodoDB > -1 ) {
+  //           let saldoPeriodo  = respDB.data[iPeriodoDB].saldo + esteValor
+  //           let idPeriodo     = respDB.data[iPeriodoDB]._id
+  //           let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
+  //         }
+  //         const respCR = await axios.get(apiURLsdMES) // AJUSTANDO SALDO CREDITO
+  //         let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
+  //         console.log(" EXCanomesCR: ",ano,mes,props.unidadeAtiva,estruturalCR)
+  //         if ( iPeriodoCR > -1 ) {
+  //           let saldoPeriodo  = respCR.data[iPeriodoCR].saldo - esteValor
+  //           let idPeriodo     = respCR.data[iPeriodoCR]._id
+  //           let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
+  //         }
+  //     }
+  //     fetchSDanoMes()
+  //   } catch (error) { console.log(error) }
 
-    try { // ***** gravação das totalizações por ano/mes/dia
-      const fetchSDanoMesDia = async () => {
-          const respDB = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO DEBITO
-          let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
-          console.log(" EXCanomesdiaDB: ",ano,mes,dia,props.unidadeAtiva,estruturalDB) 
-          if ( iPeriodoDB > -1 ) {
-            let saldoPeriodo  = respDB.data[iPeriodoDB].saldo + esteValor
-            let idPeriodo     = respDB.data[iPeriodoDB]._id
-            let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
-          }
-          const respCR = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO CREDITO
-          let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
-          console.log(" EXCanomesdiaCR: ",ano,mes,dia,props.unidadeAtiva,estruturalCR)
-          if ( iPeriodoCR > -1 ) {
-            let saldoPeriodo  = respCR.data[iPeriodoCR].saldo - esteValor
-            let idPeriodo     = respCR.data[iPeriodoCR]._id
-            let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
-          }
-      }
-      fetchSDanoMesDia()
-    } catch (error) { console.log(error) }
+  //   try { // ***** gravação das totalizações por ano/mes/dia
+  //     const fetchSDanoMesDia = async () => {
+  //         const respDB = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO DEBITO
+  //         let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
+  //         console.log(" EXCanomesdiaDB: ",ano,mes,dia,props.unidadeAtiva,estruturalDB) 
+  //         if ( iPeriodoDB > -1 ) {
+  //           let saldoPeriodo  = respDB.data[iPeriodoDB].saldo + esteValor
+  //           let idPeriodo     = respDB.data[iPeriodoDB]._id
+  //           let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
+  //         }
+  //         const respCR = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO CREDITO
+  //         let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
+  //         console.log(" EXCanomesdiaCR: ",ano,mes,dia,props.unidadeAtiva,estruturalCR)
+  //         if ( iPeriodoCR > -1 ) {
+  //           let saldoPeriodo  = respCR.data[iPeriodoCR].saldo - esteValor
+  //           let idPeriodo     = respCR.data[iPeriodoCR]._id
+  //           let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
+  //         }
+  //     }
+  //     fetchSDanoMesDia()
+  //   } catch (error) { console.log(error) }
 
-  }
+  // }
 
 // ******************* INCLUIR LANÇAMENTOS NAS BASES DE DADO DE SALDOS (DD,MM,AA)  
 
-  const incluirSaldos = (registro) => {    
+  // const incluirSaldos = (registro) => {    
 
-    let ano = parseInt(registro.data.slice(6));
-    let mes = registro.data.slice(3,5);
-    let dia = registro.data.slice(0,2);
-    let estruturalDB = registro.contaDebito;
-    let estruturalCR = registro.contaCredito;
-    let esteValor = registro.valor;
+  //   let ano = parseInt(registro.data.slice(6));
+  //   let mes = registro.data.slice(3,5);
+  //   let dia = registro.data.slice(0,2);
+  //   let estruturalDB = registro.contaDebito;
+  //   let estruturalCR = registro.contaCredito;
+  //   let esteValor = registro.valor;
 
-    console.log("==========INCLUSAO: ", ano,mes,dia,estruturalDB, estruturalCR, esteValor);    
+  //   console.log("==========INCLUSAO: ", ano,mes,dia,estruturalDB, estruturalCR, esteValor);    
     
-    try { // ***** gravação das totalizações por ano
-      const fetchSDano = async () => {
-          const respDB = await axios.get(apiURLsdANO) // AJUSTANDO SALDO DEBITO
-          let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
-          console.log(" anoDB: ",ano,props.unidadeAtiva,estruturalDB) 
-          if ( iPeriodoDB > -1 ) {
-            let saldoPeriodo  = respDB.data[iPeriodoDB].saldo - esteValor
-            let idPeriodo     = respDB.data[iPeriodoDB]._id
-            let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
-          } else {
-            let objResultado = { ano: ano, saldo: 0 - esteValor, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.post(apiURLsdANO,  objResultado)
-          }
-          const respCR = await axios.get(apiURLsdANO) // AJUSTANDO SALDO CREDITO
-          let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
-          console.log(" anoCR: ",ano,props.unidadeAtiva,estruturalCR)
-          if ( iPeriodoCR > -1 ) {
-            let saldoPeriodo  = respCR.data[iPeriodoCR].saldo + esteValor
-            let idPeriodo     = respCR.data[iPeriodoCR]._id
-            let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
-          } else {
-            let objResultado = { ano: ano, saldo: esteValor, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.post(apiURLsdANO,  objResultado)
-          }
-      }
-      fetchSDano()
-    } catch (error) { console.log(error) }
+  //   try { // ***** gravação das totalizações por ano
+  //     const fetchSDano = async () => {
+  //         const respDB = await axios.get(apiURLsdANO) // AJUSTANDO SALDO DEBITO
+  //         let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
+  //         console.log(" anoDB: ",ano,props.unidadeAtiva,estruturalDB) 
+  //         if ( iPeriodoDB > -1 ) {
+  //           let saldoPeriodo  = respDB.data[iPeriodoDB].saldo - esteValor
+  //           let idPeriodo     = respDB.data[iPeriodoDB]._id
+  //           let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
+  //         } else {
+  //           let objResultado = { ano: ano, saldo: 0 - esteValor, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.post(apiURLsdANO,  objResultado)
+  //         }
+  //         const respCR = await axios.get(apiURLsdANO) // AJUSTANDO SALDO CREDITO
+  //         let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
+  //         console.log(" anoCR: ",ano,props.unidadeAtiva,estruturalCR)
+  //         if ( iPeriodoCR > -1 ) {
+  //           let saldoPeriodo  = respCR.data[iPeriodoCR].saldo + esteValor
+  //           let idPeriodo     = respCR.data[iPeriodoCR]._id
+  //           let objResultado = { ano: ano, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdANO}/${idPeriodo}`, objResultado)
+  //         } else {
+  //           let objResultado = { ano: ano, saldo: esteValor, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.post(apiURLsdANO,  objResultado)
+  //         }
+  //     }
+  //     fetchSDano()
+  //   } catch (error) { console.log(error) }
 
-    try { // ***** gravação das totalizações por ano/mes
-      const fetchSDanoMes = async () => {
-          const respDB = await axios.get(apiURLsdMES) // AJUSTANDO SALDO DEBITO
-          let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
-          console.log(" anomesDB: ",ano,mes,props.unidadeAtiva,estruturalDB) 
-          if ( iPeriodoDB > -1 ) {
-            let saldoPeriodo  = respDB.data[iPeriodoDB].saldo - esteValor
-            let idPeriodo     = respDB.data[iPeriodoDB]._id
-            let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
-          } else {
-            let objResultado = { ano: ano, mes: mes, saldo: 0 - esteValor, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.post(apiURLsdMES,  objResultado)
-          }
-          const respCR = await axios.get(apiURLsdMES) // AJUSTANDO SALDO CREDITO
-          let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
-          console.log(" anomesCR: ",ano,mes,props.unidadeAtiva,estruturalCR)
-          if ( iPeriodoCR > -1 ) {
-            let saldoPeriodo  = respCR.data[iPeriodoCR].saldo + esteValor
-            let idPeriodo     = respCR.data[iPeriodoCR]._id
-            let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
-          } else {
-            let objResultado = { ano: ano, mes: mes, saldo: esteValor, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.post(apiURLsdMES,  objResultado)
-          }
-      }
-      fetchSDanoMes()
-    } catch (error) { console.log(error) }
+  //   try { // ***** gravação das totalizações por ano/mes
+  //     const fetchSDanoMes = async () => {
+  //         const respDB = await axios.get(apiURLsdMES) // AJUSTANDO SALDO DEBITO
+  //         let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
+  //         console.log(" anomesDB: ",ano,mes,props.unidadeAtiva,estruturalDB) 
+  //         if ( iPeriodoDB > -1 ) {
+  //           let saldoPeriodo  = respDB.data[iPeriodoDB].saldo - esteValor
+  //           let idPeriodo     = respDB.data[iPeriodoDB]._id
+  //           let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
+  //         } else {
+  //           let objResultado = { ano: ano, mes: mes, saldo: 0 - esteValor, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.post(apiURLsdMES,  objResultado)
+  //         }
+  //         const respCR = await axios.get(apiURLsdMES) // AJUSTANDO SALDO CREDITO
+  //         let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
+  //         console.log(" anomesCR: ",ano,mes,props.unidadeAtiva,estruturalCR)
+  //         if ( iPeriodoCR > -1 ) {
+  //           let saldoPeriodo  = respCR.data[iPeriodoCR].saldo + esteValor
+  //           let idPeriodo     = respCR.data[iPeriodoCR]._id
+  //           let objResultado = { ano: ano, mes: mes, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdMES}/${idPeriodo}`, objResultado)
+  //         } else {
+  //           let objResultado = { ano: ano, mes: mes, saldo: esteValor, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.post(apiURLsdMES,  objResultado)
+  //         }
+  //     }
+  //     fetchSDanoMes()
+  //   } catch (error) { console.log(error) }
 
-    try { // ***** gravação das totalizações por ano/mes/dia
-      const fetchSDanoMesDia = async () => {
-          const respDB = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO DEBITO
-          let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
-          console.log(" anomesdiaDB: ",ano,mes,dia,props.unidadeAtiva,estruturalDB) 
-          if ( iPeriodoDB > -1 ) {
-            let saldoPeriodo  = respDB.data[iPeriodoDB].saldo - esteValor
-            let idPeriodo     = respDB.data[iPeriodoDB]._id
-            let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
-          } else {
-            let objResultado = { ano: ano, mes: mes, dia: dia, saldo: 0 - esteValor, estrutural: estruturalDB, unidade: props.unidadeAtiva };
-            await axios.post(apiURLsdDIA,  objResultado)
-          }
-          const respCR = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO CREDITO
-          let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
-          console.log(" anomesdiaCR: ",ano,mes,dia,props.unidadeAtiva,estruturalCR)
-          if ( iPeriodoCR > -1 ) {
-            let saldoPeriodo  = respCR.data[iPeriodoCR].saldo + esteValor
-            let idPeriodo     = respCR.data[iPeriodoCR]._id
-            let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
-          } else {
-            let objResultado = { ano: ano, mes: mes, dia: dia, saldo: esteValor, estrutural: estruturalCR, unidade: props.unidadeAtiva };
-            await axios.post(apiURLsdDIA,  objResultado)
-          }
-      }
-      fetchSDanoMesDia()
-    } catch (error) { console.log(error) }
+  //   try { // ***** gravação das totalizações por ano/mes/dia
+  //     const fetchSDanoMesDia = async () => {
+  //         const respDB = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO DEBITO
+  //         let iPeriodoDB = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalDB )
+  //         console.log(" anomesdiaDB: ",ano,mes,dia,props.unidadeAtiva,estruturalDB) 
+  //         if ( iPeriodoDB > -1 ) {
+  //           let saldoPeriodo  = respDB.data[iPeriodoDB].saldo - esteValor
+  //           let idPeriodo     = respDB.data[iPeriodoDB]._id
+  //           let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
+  //         } else {
+  //           let objResultado = { ano: ano, mes: mes, dia: dia, saldo: 0 - esteValor, estrutural: estruturalDB, unidade: props.unidadeAtiva };
+  //           await axios.post(apiURLsdDIA,  objResultado)
+  //         }
+  //         const respCR = await axios.get(apiURLsdDIA) // AJUSTANDO SALDO CREDITO
+  //         let iPeriodoCR = respDB.data.findIndex(c => c.ano===ano&c.mes===mes&c.dia===dia&c.unidade===props.unidadeAtiva&c.estrutural===estruturalCR )
+  //         console.log(" anomesdiaCR: ",ano,mes,dia,props.unidadeAtiva,estruturalCR)
+  //         if ( iPeriodoCR > -1 ) {
+  //           let saldoPeriodo  = respCR.data[iPeriodoCR].saldo + esteValor
+  //           let idPeriodo     = respCR.data[iPeriodoCR]._id
+  //           let objResultado = { ano: ano, mes: mes, dia: dia, saldo: saldoPeriodo, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.put(`${apiURLsdDIA}/${idPeriodo}`, objResultado)
+  //         } else {
+  //           let objResultado = { ano: ano, mes: mes, dia: dia, saldo: esteValor, estrutural: estruturalCR, unidade: props.unidadeAtiva };
+  //           await axios.post(apiURLsdDIA,  objResultado)
+  //         }
+  //     }
+  //     fetchSDanoMesDia()
+  //   } catch (error) { console.log(error) }
 
-  }
+  // }
 
   const revelaDescricao = () => {
     let inversao = !rDescricao;
@@ -527,7 +509,7 @@ function Lancamentos(props) {
                 }</span>
               </td>
               <td className="p-1 text-start">{l.contaCredito}<span style={{fontSize: "12px"}}> {
-                rDescricao ? mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao : " "
+                rDescricao ? mContas[mContas.findIndex( c => c.estrutural === l.contaCredito)].descricao : " "
                 }</span>
               </td>
               <td className="p-1 text-center">
@@ -565,9 +547,12 @@ function Lancamentos(props) {
       }
     }
     if ( type === 'data') {
-      let dataA = xLancto[0][propr].slice(6) + "-" + xLancto[0][propr].slice(3,5) + "-" + xLancto[0][propr].slice(0,2);
-      let dataB = xLancto[xLancto.length-1][propr].slice(6) + "-" + xLancto[xLancto.length-1][propr].slice(3,5) + "-" + xLancto[xLancto.length-1][propr].slice(0,2);
-      // if ( xLancto[0][propr] > xLancto[xLancto.length-1][propr] ) {
+      let dataA = xLancto[0][propr].slice(6) + "-" + 
+                  xLancto[0][propr].slice(3,5) + "-" + 
+                  xLancto[0][propr].slice(0,2);
+      let dataB = xLancto[xLancto.length-1][propr].slice(6) + "-" + 
+                  xLancto[xLancto.length-1][propr].slice(3,5) + "-" + 
+                  xLancto[xLancto.length-1][propr].slice(0,2);
       if ( dataA > dataB ) {
         xLancto.sort( (a,b) => 
             a[propr].slice(6) + "-" + a[propr].slice(3,5) + "-" + a[propr].slice(0,2) > 
@@ -592,7 +577,8 @@ function Lancamentos(props) {
         <Container>
 
             {/* Mostra o Formulário que solicita a STRING de BUSCA/PESQUISA */}
-            {/* Mostra, também, o botão de ADICIONAR um REGISTRO NOVO */}
+            {/* o botão de ADICIONAR um REGISTRO NOVO */}
+            {/* o botão de REVELAR detalhes descritivos (conta,histórico) */}
             <Form className="my-4 d-flex" >
               <Button variant="" onClick={ prepararFormNova }>
                 <FontAwesomeIcon style={{color: "blue"}} icon={faPlus}/> 

@@ -317,10 +317,3 @@ function Contas(props) {
 export default Contas;
 
 // ---------------------------------------------------------------------//
-
-
-// const handleChange = (e) => {
-//   setForm({...form, [e.target.name]: e.target.value})
-// }
-
-
