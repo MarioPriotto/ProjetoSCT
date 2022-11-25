@@ -45,7 +45,8 @@ function Unidades(props) {
     try {
       const fetchUnidades = async () => {
           const response = await axios.get(apiURL)
-          let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
+          //let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
+          let tempData = [...response.data]
           setUnidades(tempData)
           setIsLoading(false)
       }
