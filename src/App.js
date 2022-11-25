@@ -11,7 +11,7 @@ import Balancete from './components/Balancete/Balancete';
 import { Routes, Route } from 'react-router-dom';
 import { useState } from "react";
 
-import { Container } from "react-bootstrap";
+// import { Container } from "react-bootstrap";
 
 function App() {
 
@@ -38,10 +38,10 @@ function App() {
             { work.permissao === 'Administrativa' && <Route path="/basedados" element={<BaseDados/>}/> }
 
             {/* } */}
-            <Route path="/unidades" element={<Unidades/>} />
-            <Route path="/historicos" element={<Historicos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
+            <Route path="/unidades"    element={<Unidades/>} />
+            <Route path="/historicos"  element={<Historicos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
             <Route path="/lancamentos" element={<Lancamentos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
-            <Route path="/balancete" element={<Balancete unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
+            <Route path="/balancete"   element={<Balancete unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
 
         {/* } */}
 

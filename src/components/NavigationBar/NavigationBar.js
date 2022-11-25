@@ -20,7 +20,7 @@ function NavigationBar(props) {
                             <Link className="nav-link" to="/contas">Contas</Link>
                             { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/usuarios">Usuarios</Link> }
                             { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/unidades">Unidades</Link> }
-                            { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/basedados">( Não usar BD)</Link> }
+                            { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/basedados">(Não usar BD)</Link> }
                             <Link className="nav-link" to="/historicos">Historicos</Link>                        
                             <Link className="nav-link" to="/lancamentos">Lançamentos</Link>
                             <Link className="nav-link" to="/balancete">Balancete</Link>

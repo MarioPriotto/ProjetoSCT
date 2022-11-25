@@ -504,7 +504,12 @@ function Lancamentos(props) {
           <tr key={l._id}>              
               <td className="p-1 text-center">{l.codigo}</td>
               <td className="p-1 text-center">{l.data}</td>
-              <td className="p-1 text-end">{l.valor.toFixed(2)}</td>
+              
+              {/* <td className="p-1 text-end">{l.valor.toFixed(2)}</td> */}
+              <td className="p-1 text-end">{
+                l.valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
+              }</td>
+
               <td className="p-1 text-center">{l.historico}</td>
               <td className="p-1 text-start">{l.complemento}</td>
               <td className="p-1 text-center">{l.contaDebito}</td>
