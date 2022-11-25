@@ -7,7 +7,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Container, Form, Spinner, Table, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faPen, faTrash, faUpDown } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faPen, faTrash, faUpDown, faXmarksLines } from '@fortawesome/free-solid-svg-icons'
 
 // npm install --save @fortawesome/fontawesome-free 
 
@@ -61,7 +61,9 @@ function Lancamentos(props) {
   // guarda o objeto original do registro que entra em modo alteração
   const [registroOriginal, setRegistroOriginal] = useState({});
 
-    // Faz com que a função de Leitura só aconteça uma vez
+  const [rDescricao, setRdescricao] = useState(false);
+
+  // Faz com que a função de Leitura só aconteça uma vez
   useEffect(() => {
     lerContas()
     lerHistoricos()
@@ -492,6 +494,11 @@ function Lancamentos(props) {
 
   }
 
+  const revelaDescricao = () => {
+    let inversao = !rDescricao;
+    setRdescricao(inversao);
+  }
+
   // prepara na variável "renderLancamentos"  o conteudo lido na base de dados
   // e que foi, previamente, armazenado na matriz correspondente
   // Reparar que a função ".filter" é utilizada para que sejam filtrados
@@ -510,10 +517,19 @@ function Lancamentos(props) {
                 l.valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
               }</td>
 
-              <td className="p-1 text-start">{l.historico}<span style={{fontSize: "12px"}}> {mHistoricos[mHistoricos.findIndex( c => parseInt(c.codigo) === l.historico)].descricao}</span></td>
+              <td className="p-1 text-start">{l.historico}<span style={{fontSize: "12px"}}> {
+                  rDescricao ? mHistoricos[mHistoricos.findIndex( c => parseInt(c.codigo) === l.historico)].descricao : " "
+                }</span>
+              </td>
               <td className="p-1 text-start">{l.complemento}</td>
-              <td className="p-1 text-start">{l.contaDebito}<span style={{fontSize: "12px"}}> {mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao}</span></td>
-              <td className="p-1 text-start">{l.contaCredito}<span style={{fontSize: "12px"}}> {mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao}</span></td>              
+              <td className="p-1 text-start">{l.contaDebito}<span style={{fontSize: "12px"}}> {
+                rDescricao ? mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao : " "
+                }</span>
+              </td>
+              <td className="p-1 text-start">{l.contaCredito}<span style={{fontSize: "12px"}}> {
+                rDescricao ? mContas[mContas.findIndex( c => c.estrutural === l.contaDebito)].descricao : " "
+                }</span>
+              </td>
               <td className="p-1 text-center">
                 <Button className="p-0" variant="" onClick={ (event) => { alterarLancamento(l._id) } }> 
                   <FontAwesomeIcon style={{color: "blue"}} icon={faPen}/>
@@ -580,6 +596,9 @@ function Lancamentos(props) {
             <Form className="my-4 d-flex" >
               <Button variant="" onClick={ prepararFormNova }>
                 <FontAwesomeIcon style={{color: "blue"}} icon={faPlus}/> 
+              </Button>
+              <Button variant="" onClick={ revelaDescricao }>
+                <FontAwesomeIcon style={{color: "blue"}} icon={faXmarksLines}/> 
               </Button>
               <Form.Control
                     type="search" placeholder="Procurar lancamento"
