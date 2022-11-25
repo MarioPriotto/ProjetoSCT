@@ -2,105 +2,65 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Form, Container, Spinner, Table } from "react-bootstrap";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUpDown } from '@fortawesome/free-solid-svg-icons'
+
 function Balancete(props) {
 
-  const apiURL = "https://ironrest.herokuapp.com/mContas";
-
-  const apiURLsdMES      = "https://ironrest.herokuapp.com/mSDmes";
-  const apiURLsdDIA      = "https://ironrest.herokuapp.com/mSDdia";
-  const apiURLsdANO      = "https://ironrest.herokuapp.com/mSDano"; 
-
+  const apiURL           = "https://ironrest.herokuapp.com/mContas";
   const apiURLlancto     = "https://ironrest.herokuapp.com/mLancamentos";
 
   const [mContas, setContas] = useState([]);
-  const [mSDano,  setSDano]  = useState([]);
-  const [mSDmes,  setSDmes]  = useState([]);
-  const [mSDdia,  setSDdia]  = useState([]);
-
   const [mLancamentos, setLancamentos] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
+
+  const [onlyZero, setOnlyZero] = useState(false);
 
   useEffect(() => {
     lerContas()
-    lerSDano()
-    lerSDmes()
-    lerSDdia()
     lerLancamentos()
   }, []) 
 
   const processar01 = (e) => {  
     e.preventDefault();
 
-    console.log("chegou em prepararContas01...", mContas.length );
-
-    console.log("2*******************************");
-
     let xContas = mContas.map( (c) => { return c }  );
-
     xContas.sort( (a,b) => { return a.estrutural < b.estrutural ? 1 : -1 } ) 
-
     xContas.forEach( c => c.workSD = 0 ); 
 
     xContas.forEach( (c) => { 
       if ( c.nivel === "9" ) {
         c.workSD = retSaldoConta(c.estrutural); 
-        if ( c.workSD  !== 0 ) { 
-          console.log(c.estrutural, c.nivel, c.descricao, c.workSD) 
-        }
       }
     });
 
-    console.log("1*******************************");
     xContas.forEach( (d,ind,arr) => {
-      // console.log("passando aqui pela conta: ",ind,d.estrutural,d.nivel,d.descricao,d.workSD);
-
-      if ( d.workSD !== 0 ) {
-      
+      if ( d.workSD !== 0 & parseInt(d.nivel) === 9) {
         for (let i=parseInt(d.nivel)-1;i>0;i--) {
-          console.log("procurando pelo nivel: ",ind,d.estrutural,d.nivel,"->",i,"<-",d.workSD,d.descricao);
-
           for ( let j=ind+1;j<xContas.length;j++) {
-            if ( xContas[j].nivel === i ) {
-              console.log("==========encontrou onde acumular: ",ind,d.nivel,i,xContas[j].estrutural, xContas[j].nivel, xContas[j].descricao)
-              // acumula aqui 
-              // saltar para o PROXIMO LET J
+            if ( parseInt(xContas[j].nivel) === i ) {
+              xContas[j].workSD += d.workSD;
+              break;
             }
-            if ( xContas[j].nivel < i ) {
-              // acumula aqui NO j.nivel
-              // força o j a ser i-1
+            if ( parseInt(xContas[j].nivel) < i ) {
+              i = parseInt(xContas[j].nivel);
+              xContas[j].workSD += d.workSD;
+              break;
             }
           }        
-
-          // NAO USAR let indice = xContas.findIndex( (d) => d.nivel === i & d.estrutural < c.estrutural )
-          // NAO USAR xContas.workSD[indice] = xContas.workSD[indice] + c.workSD;
         }
-
       }
-
     });
 
     xContas.sort( (a,b) => { return a.estrutural > b.estrutural ? 1 : -1 } ) 
-
     setContas(xContas); 
-
-    console.log("Final do prepararContas01: ", mContas.length, xContas.length);
-
   }
 
   const retSaldoConta = (codigoEstrutural) => { 
-
-    // let s3dia = mSDdia
-    // .filter( (c) => c.unidade === props.unidadeAtiva & c.estrutural === codigoEstrutural )
-    // .reduce( (ac,current) => { return ac + current.saldo
-    // },0);
-    // //console.log("veio buscar saldo: ", codigoEstrutural, s3dia)
-
      let tLancto = mLancamentos
      .filter( (c) => c.unidade === props.unidadeAtiva & (c.contaCredito === codigoEstrutural | c.contaDebito === codigoEstrutural) )
      .reduce( (ac,current) => { return ( codigoEstrutural === current.contaCredito ? ac + current.valor : ac - current.valor )
      },0);
-
     return tLancto;
   }
   
@@ -119,50 +79,7 @@ function Balancete(props) {
       console.log(error)
     }
   }
-
-  // Leitura de SDANO
-  const lerSDano = () => {
-    try {
-      const fetchSDANO = async () => {
-          const response = await axios.get(apiURLsdANO)
-          let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
-          setSDano(tempData)
-          setIsLoading(false)
-      }
-      fetchSDANO()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  // Leitura de SDMES
-  const lerSDmes = () => {
-    try {
-      const fetchSDMES = async () => {
-          const response = await axios.get(apiURLsdMES)
-          let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
-          setSDmes(tempData)
-          setIsLoading(false)
-      }
-      fetchSDMES()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  // Leitura de SDMES
-  const lerSDdia = () => {
-    try {
-      const fetchSDDIA = async () => {
-          const response = await axios.get(apiURLsdDIA)
-          let tempData = ([...response.data]).filter(c=>c.unidade===props.unidadeAtiva)
-          setSDdia(tempData)
-          setIsLoading(false)
-      }
-      fetchSDDIA()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
+  
   // Le os dados na Internet e armazena em Matriz (de estado)
   const lerLancamentos = () => {
     try {
@@ -179,12 +96,16 @@ function Balancete(props) {
   }
 
   const espacos = (qtd) => {
-    return ( "         ".slice(10-qtd)   )
+    return ("         ".slice(10-qtd))
   }
 
   const renderContas = mContas.map((conta) => {
-      return (
-          <tr key={conta._id}>
+
+      return ( 
+          onlyZero === false | conta.workSD !== 0 ? 
+          
+          
+          <><tr key={conta._id}>
               <td className="p-1 text-center">{conta.reduzido}</td>
               <td className="p-1 text-center">{conta.estrutural}</td>
               <td className="p-1 text-center">{conta.nivel}</td>
@@ -192,8 +113,12 @@ function Balancete(props) {
               <td className="p-1 text-end">{ 
                 conta.workSD.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
               }</td>
-          </tr>
+          </tr> </>
+
+          
+          : " "
       )
+
   })
 
   const rDH = () => {
@@ -214,6 +139,58 @@ function Balancete(props) {
     return (str_hora);
   }
 
+  const classificar = (propr, type) => {
+    let xContas = [...mContas];
+    if ( type === 'number') {
+      if ( parseInt(xContas[0][propr]) > parseInt(xContas[xContas.length-1][propr]) ) {
+        xContas.sort( (a,b) => 
+          parseInt(a[propr]) > parseInt(b[propr]) ? 1 : -1 )
+      } else {
+        xContas.sort( (a,b) => 
+          parseInt(a[propr]) < parseInt(b[propr]) ? 1 : -1 )
+      }
+    } 
+    if ( type === 'text') {
+      if ( xContas[0][propr].toLowerCase() > xContas[xContas.length-1][propr].toLowerCase() ) {
+        xContas.sort( (a,b) => 
+          a[propr].toLowerCase() > b[propr].toLowerCase() ? 1 : -1 )
+      } else {
+        xContas.sort( (a,b) => 
+          a[propr].toLowerCase() < b[propr].toLowerCase() ? 1 : -1 )
+      }
+    }
+    if ( type === 'data') {
+      let dataA = 
+            xContas[0][propr].slice(6) + "-" + 
+            xContas[0][propr].slice(3,5) + "-" + 
+            xContas[0][propr].slice(0,2);
+      let dataB = 
+          xContas[xContas.length-1][propr].slice(6) + "-" + 
+          xContas[xContas.length-1][propr].slice(3,5) + "-" + 
+          xContas[xContas.length-1][propr].slice(0,2);
+      if ( dataA > dataB ) {
+        xContas.sort( (a,b) => 
+            a[propr].slice(6) + "-" + a[propr].slice(3,5) + "-" + a[propr].slice(0,2) > 
+            b[propr].slice(6) + "-" + b[propr].slice(3,5) + "-" + b[propr].slice(0,2) ? 
+            1 : -1 
+        )
+      } else {
+        xContas.sort( (a,b) => 
+            a[propr].slice(6) + "-" + a[propr].slice(3,5) + "-" + a[propr].slice(0,2) < 
+            b[propr].slice(6) + "-" + b[propr].slice(3,5) + "-" + b[propr].slice(0,2) ? 
+            1 : -1 
+        )
+      }
+    }
+    setContas(xContas);
+  }
+
+  const setarOnlyZero = (e) => { 
+    e.preventDefault();
+    let inverso = !onlyZero;
+    setOnlyZero(inverso) 
+  }
+
   return (
 
     <div className="Balancete">
@@ -222,35 +199,60 @@ function Balancete(props) {
         
             <Form>
               <div className="text-center">
-                <Button className="m-3" onClick={processar01} style={{width: "40%"}} variant="success" type="submit">BALANCETE ATUAL</Button>
-                <Button className="m-3" onClick={processar01} style={{width: "40%"}} variant="success" type="submit">BALANCETE RETROATIVO</Button>
+                <Button className="m-3" onClick={processar01}   style={{width: "30%"}} variant="success" type="submit">ATUAL</Button>
+                <Button className="m-3" onClick={processar01}   style={{width: "30%"}} variant="success" type="submit">RETROATIVO</Button>
+                <Button className="m-3" onClick={setarOnlyZero} style={{width: "30%"}} variant="success" type="submit">FILTRAR "0"</Button>
               </div>
             </Form>
             
             {isLoading && <Spinner className="" animation="border" />}
-
             
             {!isLoading && <>
-
-
 
               <Table className="mt-4" bordered hover>
                     <thead>
                         <tr>
-                            <th>Reduzido</th>
-                            <th>Estrutural</th>
-                            <th>Nivel</th>
-                            <th>Descrição</th>
+                            <th onClick={() => classificar('reduzido','number')}>
+                            <div className="d-flex">
+                                <div className='col-11'>Reduzido</div>
+                                <div className='col-1'>
+                                  <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/>
+                                </div>
+                              </div>
+                            </th>
+                            <th onClick={() => classificar('estrutural','number')}>
+                            <div className="d-flex">
+                                <div className='col-11'>Estrutural</div>
+                                <div className='col-1'>
+                                  <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/>
+                                </div>
+                              </div>
+                            </th>
+                            <th onClick={() => classificar('nivel','number')}>
+                            <div className="d-flex">
+                                <div className='col-11'>Nivel</div>
+                                <div className='col-1'>
+                                  <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/>
+                                </div>
+                              </div>
+                            </th>
+                            <th onClick={() => classificar('descricao','text')}>
+                            <div className="d-flex">
+                                <div className='col-11'>Descrição</div>
+                                <div className='col-1'>
+                                  <FontAwesomeIcon style={{color: "blue"}} icon={faUpDown}/>
+                                </div>
+                              </div>
+                            </th>
                             <th>Saldo</th>
                         </tr>
-                    </thead>
-
-                    {renderContas}
-
+                    </thead>                    
+                    <tbody>
+                      {renderContas}
+                    </tbody>
               </Table>
 
             </>}
-
             
             <div className="fs-6 fw-bold">
               Usuário: {props.usuarioAtivo}
