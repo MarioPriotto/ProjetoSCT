@@ -29,10 +29,10 @@ function App() {
 
         <Route path="/contas" element={<Contas unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
 
-        { work.permissao === 'Administrativa' && <Route path="/usuarios" element={<Usuarios/>}/> }
+        { work.permissao === 'Administrativa' && <Route path="/usuarios"  element={<Usuarios unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />}/> }
         { work.permissao === 'Administrativa' && <Route path="/basedados" element={<BaseDados/>}/> }
 
-        <Route path="/unidades"    element={<Unidades/>} />
+        <Route path="/unidades"    element={<Unidades unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
         <Route path="/historicos"  element={<Historicos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
         <Route path="/lancamentos" element={<Lancamentos unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />
         <Route path="/balancete"   element={<Balancete unidadeAtiva={work.unidade} usuarioAtivo={work.usuario} />} />

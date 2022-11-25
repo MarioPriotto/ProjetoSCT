@@ -15,13 +15,13 @@ function NavigationBar(props) {
                     { props.work.unidade > 0 && props.work.usuario > 0 && 
                         <Nav className="me-auto">
                             <Link className="nav-link" to="/">Login</Link>
-                                <Link className="nav-link" to="/contas">Contas</Link>
-                                { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/usuarios">Usuarios</Link> }
-                                { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/unidades">Unidades</Link> }
-                                { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/basedados">(BD)</Link> }
-                                <Link className="nav-link" to="/historicos">Historicos</Link>                        
-                                <Link className="nav-link" to="/lancamentos">Lançamentos</Link>
-                                <Link className="nav-link" to="/balancete">Balancete</Link>
+                            { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/usuarios">Usuarios</Link> }
+                            { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/unidades">Unidades</Link> }
+                            <Link className="nav-link" to="/historicos">Historicos</Link>
+                            <Link className="nav-link" to="/contas">Contas</Link>
+                            <Link className="nav-link" to="/lancamentos">Lançamentos</Link>
+                            <Link className="nav-link" to="/balancete">Balancete</Link>
+                            { props.work.permissao === "Administrativa" && <Link className="nav-link" to="/basedados">(BD)</Link> }                            
                         </Nav>
                     }
                 </Navbar.Collapse>
